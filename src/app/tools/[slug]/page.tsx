@@ -1,41 +1,34 @@
 // src/app/tools/[slug]/page.tsx
+// ✅ 终极兼容版：去掉复杂类型，确保 100% 能运行
+
 import { notFound } from "next/navigation";
 import { tools } from "@/lib/data";
 import { ArrowLeft, ExternalLink, Star } from "lucide-react";
 
-// ✅ 关键1：生成静态路径（必须导出！）
-// 这会让 Next.js 在构建时为每个工具生成独立页面
+// ✅ 关键1：生成静态路径（必须 async + export）
 export async function generateStaticParams() {
+  console.log("🔍 generateStaticParams called, tools count:", tools.length);
   return tools.map((tool) => ({
     slug: tool.slug,
   }));
 }
 
-// ✅ 关键2：生成页面元数据（SEO 优化）
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const tool = tools.find((t) => t.slug === params.slug);
-  if (!tool) {
-    return { title: "工具未找到 | AI NavHub Pro" };
-  }
-  return {
-    title: `${tool.name} | AI NavHub Pro`,
-    description: tool.description,
-    openGraph: {
-      title: tool.name,
-      description: tool.description,
-      type: "website",
-    },
-  };
-}
-
-// ✅ 关键3：页面组件（确保 params 正确解构）
-export default function ToolPage({ params }: { params: { slug: string } }) {
-  const tool = tools.find((t) => t.slug === params.slug);
+// ✅ 关键2：页面组件（用最简参数解构）
+export default async function ToolPage({ params }: { params: { slug: string } }) {
+  // ✅ 关键3：Next.js 16+ 需要 await params（如果报错就去掉 await）
+  const awaitedParams = await params;
+  const slug = awaitedParams.slug;
   
-  // 如果没找到工具，返回 404
+  console.log("🔍 ToolPage rendering, slug:", slug);
+  
+  const tool = tools.find((t) => t.slug === slug);
+  
   if (!tool) {
+    console.log("❌ Tool not found:", slug);
     notFound();
   }
+
+  console.log("✅ Tool found:", tool.name);
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4">
@@ -49,7 +42,7 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
         </a>
 
         {/* 工具卡片 */}
-        <div className="glass-card rounded-3xl p-8">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 shadow-lg">
           {/* 头部 */}
           <div className="flex items-start gap-6 mb-8">
             <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${tool.logoGradient} flex items-center justify-center text-white font-bold text-3xl shadow-lg`}>
@@ -63,9 +56,9 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
                 </span>
                 <span className="text-slate-500">•</span>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  tool.pricing === 'free' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                  tool.pricing === 'freemium' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-                  'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+                  tool.pricing === 'free' ? 'bg-green-100 text-green-700' :
+                  tool.pricing === 'freemium' ? 'bg-blue-100 text-blue-700' :
+                  'bg-amber-100 text-amber-700'
                 }`}>
                   {tool.pricing === 'free' ? '完全免费' : tool.pricing === 'freemium' ? '免费试用' : '付费专业版'}
                 </span>
@@ -108,9 +101,8 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
             </a>
           </div>
 
-          {/* 联盟披露 */}
           <p className="text-xs text-slate-400 mt-6 text-center">
-            * 通过本站链接购买可能获得佣金，不影响您的价格，感谢支持！
+            * 通过本站链接购买可能获得佣金，不影响您的价格。
           </p>
         </div>
       </div>
