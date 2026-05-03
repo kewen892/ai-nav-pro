@@ -1,24 +1,41 @@
+// src/app/tools/[slug]/page.tsx
 import { notFound } from "next/navigation";
 import { tools } from "@/lib/data";
 import { ArrowLeft, ExternalLink, Star } from "lucide-react";
 
-// 生成静态路径（SEO优化）
+// ✅ 关键1：生成静态路径（必须导出！）
+// 这会让 Next.js 在构建时为每个工具生成独立页面
 export async function generateStaticParams() {
-  return tools.map((tool) => ({ slug: tool.slug }));
+  return tools.map((tool) => ({
+    slug: tool.slug,
+  }));
 }
 
-// 生成页面元数据（SEO）
+// ✅ 关键2：生成页面元数据（SEO 优化）
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const tool = tools.find((t) => t.slug === params.slug);
+  if (!tool) {
+    return { title: "工具未找到 | AI NavHub Pro" };
+  }
   return {
-    title: `${tool?.name} | AI NavHub Pro`,
-    description: tool?.description,
+    title: `${tool.name} | AI NavHub Pro`,
+    description: tool.description,
+    openGraph: {
+      title: tool.name,
+      description: tool.description,
+      type: "website",
+    },
   };
 }
 
+// ✅ 关键3：页面组件（确保 params 正确解构）
 export default function ToolPage({ params }: { params: { slug: string } }) {
   const tool = tools.find((t) => t.slug === params.slug);
-  if (!tool) notFound();
+  
+  // 如果没找到工具，返回 404
+  if (!tool) {
+    notFound();
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 dark:bg-slate-950 py-12 px-4">
@@ -46,9 +63,9 @@ export default function ToolPage({ params }: { params: { slug: string } }) {
                 </span>
                 <span className="text-slate-500">•</span>
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  tool.pricing === 'free' ? 'bg-green-100 text-green-700' :
-                  tool.pricing === 'freemium' ? 'bg-blue-100 text-blue-700' :
-                  'bg-amber-100 text-amber-700'
+                  tool.pricing === 'free' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                  tool.pricing === 'freemium' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                  'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
                 }`}>
                   {tool.pricing === 'free' ? '完全免费' : tool.pricing === 'freemium' ? '免费试用' : '付费专业版'}
                 </span>
