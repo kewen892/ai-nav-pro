@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "AI NavHub Pro | 2026 全球优质AI工具导航站",
   description: "发现、对比、使用最前沿的AI生产力工具。场景化推荐，实测验证，独家折扣。",
   keywords: ["AI工具导航", "AI软件推荐", "2026 AI", "免费AI工具", "生产力工具"],
-  openGraph: { title: "AI NavHub Pro", description: "发现下一代AI生产力工具", url: "https://ainav.pro", siteName: "AI NavHub Pro" }
+  openGraph: { title: "AI NavHub Pro", description: "发现下一代AI生产力工具", url: "https://kewen6.dpdns.org", siteName: "AI NavHub Pro" }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
