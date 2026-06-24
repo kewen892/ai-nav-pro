@@ -48,6 +48,13 @@ export const tools: AITool[] = [
     category: 'productivity', pricing: 'free', tags: ['Automation', 'Workflow', 'SaaS'],
     url: 'https://example.com', affiliateUrl: 'https://example.com?ref=ainav',
     rating: 4.5, votes: 1520, logoGradient: 'from-indigo-500 to-blue-600'
+  },
+  {
+    id: '6', name: 'Remio', slug: 'remio',
+    description: '本地优先AI记忆与知识库，索引文件、网页、会议、邮件和笔记，快速找回个人上下文。',
+    category: 'productivity', pricing: 'freemium', tags: ['Knowledge Base', 'Local First', 'Memory'],
+    url: 'https://remio.ai', affiliateUrl: 'https://remio.ai?ref=ainav',
+    rating: 4.7, votes: 0, logoGradient: 'from-emerald-500 to-teal-400'
   }
 ];
 
